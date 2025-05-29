@@ -1,4 +1,11 @@
 <template>
+  <h1>Convertisseur de devises</h1>
+  <p>
+    Ce convertisseur de devises vous permet de convertir des montants d'une devise à une autre.
+    Il utilise les taux de change fournis par l'API de <a href="https://exchangeratesapi.io/">exchangeratesapi.io</a>.
+    Les taux de change sont mis à jour quotidiennement.
+    Vous pouvez entrer un montant en XPF et voir combien cela vaut dans d'autres devises.
+  </p>
   <input
       v-model.number="montant"
       type="number"
@@ -13,102 +20,50 @@
       <th>Devise</th>
       <th>Taux de change</th>
       <th>Montant converti</th>
+
     </tr>
     </thead>
     <tbody>
-    <tr>
-      <td>Australie</td>
-      <td>AUD</td>
-      <td>{{ data.conversion_rates.AUD }}</td>
-      <td>{{ (data.conversion_rates.AUD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Canada</td>
-      <td>CAD</td>
-      <td>{{ data.conversion_rates.CAD }}</td>
-      <td>{{ (data.conversion_rates.CAD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Suisse</td>
-      <td>CHF</td>
-      <td>{{ data.conversion_rates.CHF }}</td>
-      <td>{{ (data.conversion_rates.CHF * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Europe</td>
-      <td>EUR</td>
-      <td>{{ data.conversion_rates.EUR }}</td>
-      <td>{{ (data.conversion_rates.EUR * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Fidji</td>
-      <td>FJD</td>
-      <td>{{ data.conversion_rates.FJD }}</td>
-      <td>{{ (data.conversion_rates.FJD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Royaume-Uni</td>
-      <td>GBP</td>
-      <td>{{ data.conversion_rates.GBP }}</td>
-      <td>{{ (data.conversion_rates.GBP * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Japon</td>
-      <td>JPY</td>
-      <td>{{ data.conversion_rates.JPY }}</td>
-      <td>{{ (data.conversion_rates.JPY * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>New-Zeland</td>
-      <td>NZD</td>
-      <td>{{ data.conversion_rates.NZD }}</td>
-      <td>{{ (data.conversion_rates.NZD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Singapour</td>
-      <td>SGD</td>
-      <td>{{ data.conversion_rates.SGD }}</td>
-      <td>{{ (data.conversion_rates.SGD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Thailand</td>
-      <td>THB</td>
-      <td>{{ data.conversion_rates.THB }}</td>
-      <td>{{ (data.conversion_rates.THB * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Etat-Unis</td>
-      <td>USD</td>
-      <td>{{ data.conversion_rates.USD }}</td>
-      <td>{{ (data.conversion_rates.USD * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Vanuatu</td>
-      <td>VUV</td>
-      <td>{{ data.conversion_rates.VUV }}</td>
-      <td>{{ (data.conversion_rates.VUV * montant).toFixed(2) }}</td>
-    </tr>
-    <tr>
-      <td>Nouvelle-Calédonie</td>
-      <td>XPF</td>
-      <td>{{ data.conversion_rates.XPF }}</td>
-      <td>{{ (data.conversion_rates.XPF * montant).toFixed(2) }}</td>
-    </tr>
+      <tr v-for="devise in devises" :key="devise.code">
+        <td>
+          <img
+              :src="devise.urlFlag"
+              :alt="devise.pays"
+              width="30"
+              class="me-2"
+          />
+          {{ devise.pays }}
+        </td>
+
+        <td>{{ devise.code }}</td>
+        <td>{{ data.conversion_rates[devise.code] }}</td>
+        <td>{{ (data.conversion_rates[devise.code] * montant).toFixed(2) }}</td>
+      </tr>
     </tbody>
   </table>
 </template>
 
-<script>
+<script setup>
 import jsonData from '../assets/data/data.json'
 import { ref } from 'vue'
 
-export default {
-  name: 'DevisesView',
-  setup() {
-    const data = ref(jsonData)
-    const montant = ref(1000)
+const montant = ref(1000)
+const data = ref(jsonData)
 
-    return { data, montant }
-  }
-}
+const devises = [
+  { code: 'AUD', pays: 'Australie', urlFlag: 'https://flagcdn.com/au.svg' },
+  { code: 'CAD', pays: 'Canada', urlFlag: 'https://flagcdn.com/ca.svg' },
+  { code: 'CHF', pays: 'Suisse', urlFlag: 'https://flagcdn.com/ch.svg' },
+  { code: 'EUR', pays: 'Europe', urlFlag: 'https://flagcdn.com/eu.svg' },
+  { code: 'FJD', pays: 'Fidji', urlFlag: 'https://flagcdn.com/fj.svg' },
+  { code: 'GBP', pays: 'Royaume-Uni', urlFlag: 'https://flagcdn.com/gb.svg' },
+  { code: 'JPY', pays: 'Japon', urlFlag: 'https://flagcdn.com/jp.svg' },
+  { code: 'NZD', pays: 'Nouvelle-Zélande', urlFlag: 'https://flagcdn.com/nz.svg' },
+  { code: 'SGD', pays: 'Singapour', urlFlag: 'https://flagcdn.com/sg.svg' },
+  { code: 'THB', pays: 'Thaïlande', urlFlag: 'https://flagcdn.com/th.svg' },
+  { code: 'USD', pays: 'États-Unis', urlFlag: 'https://flagcdn.com/us.svg' },
+  { code: 'VUV', pays: 'Vanuatu', urlFlag: 'https://flagcdn.com/vu.svg' },
+  { code: 'XPF', pays: 'Nouvelle-Calédonie', urlFlag: "https://flagcdn.com/nc.svg" }
+]
 </script>
+
