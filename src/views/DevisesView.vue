@@ -18,10 +18,10 @@
         <TransitionGroup name="fade" tag="div">
           <div
               class="rate-row fade-enter-active glow-hover"
-              :id="`rate-${index}`"
+              :id="'rate-' + index"
               v-for="(devise, index) in col"
               :key="devise.code"
-              :style="{ animationDelay: `${index * 100}ms` }"
+              :style="{ animationDelay: (index * 100) + 'ms' }"
           >
 
           <div class="flag">
