@@ -49,53 +49,65 @@
 
 
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-
-const montant = ref(1000)
-const data = ref({ conversion_rates: {} })
-const apiUrl = 'https://v6.exchangerate-api.com/v6/d5a20a0c605be1d85ff3ab9c/latest/XPF'
-
-const fetchRates = async () => {
-  try {
-    const res = await fetch(apiUrl)
-    const json = await res.json()
-    if (json.result === 'success') {
-      data.value = json
-    } else {
-      console.error('Erreur lors de la récupération des taux :', json)
+<script>
+export default {
+  data() {
+    return {
+      montant: 1000,
+      data: { conversion_rates: {} },
+      devises: [
+        { code: 'AUD', nom: 'Dollar australien', pays: 'Australie', urlFlag: 'https://flagcdn.com/au.svg' },
+        { code: 'CAD', nom: 'Dollar canadien', pays: 'Canada', urlFlag: 'https://flagcdn.com/ca.svg' },
+        { code: 'CHF', nom: 'Franc suisse', pays: 'Suisse', urlFlag: 'https://flagcdn.com/ch.svg' },
+        { code: 'EUR', nom: 'Euro', pays: 'Europe', urlFlag: 'https://flagcdn.com/eu.svg' },
+        { code: 'FJD', nom: 'Dollar fidjien', pays: 'Fidji', urlFlag: 'https://flagcdn.com/fj.svg' },
+        { code: 'GBP', nom: 'Livre sterling', pays: 'Royaume-Uni', urlFlag: 'https://flagcdn.com/gb.svg' },
+        { code: 'JPY', nom: 'Yen', pays: 'Japon', urlFlag: 'https://flagcdn.com/jp.svg' },
+        { code: 'NZD', nom: 'Dollar néo-zélandais', pays: 'Nouvelle-Zélande', urlFlag: 'https://flagcdn.com/nz.svg' },
+        { code: 'SGD', nom: 'Dollar de Singapour', pays: 'Singapour', urlFlag: 'https://flagcdn.com/sg.svg' },
+        { code: 'THB', nom: 'Baht thaïlandais', pays: 'Thaïlande', urlFlag: 'https://flagcdn.com/th.svg' },
+        { code: 'USD', nom: 'Dollar américain', pays: 'États-Unis', urlFlag: 'https://flagcdn.com/us.svg' },
+        { code: 'VUV', nom: 'Vatu', pays: 'Vanuatu', urlFlag: 'https://flagcdn.com/vu.svg' },
+        { code: 'XPF', nom: 'Franc Pacifique', pays: 'Nouvelle-Calédonie', urlFlag: 'https://flagcdn.com/nc.svg' }
+      ]
     }
-  } catch (error) {
-    console.error('Erreur réseau :', error)
+  },
+
+  computed: {
+    colGauche() {
+      const mid = Math.ceil(this.devises.length / 2)
+      return this.devises.slice(0, mid)
+    },
+    colDroite() {
+      const mid = Math.ceil(this.devises.length / 2)
+      return this.devises.slice(mid)
+    }
+  },
+
+  methods: {
+    async fetchRates() {
+      try {
+        const res = await fetch('https://v6.exchangerate-api.com/v6/d5a20a0c605be1d85ff3ab9c/latest/XPF')
+        const json = await res.json()
+        if (json.result === 'success') {
+          this.data = json
+        } else {
+          console.error('Erreur lors de la récupération des taux :', json)
+        }
+      } catch (error) {
+        console.error('Erreur réseau :', error)
+      }
+    }
+  },
+
+  // recall api au bout de 1h
+  mounted() {
+    this.fetchRates()
+    setInterval(this.fetchRates, 3600000)
   }
 }
-
-// recall api au bout de 1h
-onMounted(() => {
-  fetchRates()
-  setInterval(fetchRates, 3600000)
-})
-
-const devises = [
-  { code: 'AUD', nom: 'Dollar australien', pays: 'Australie', urlFlag: 'https://flagcdn.com/au.svg' },
-  { code: 'CAD', nom: 'Dollar canadien', pays: 'Canada', urlFlag: 'https://flagcdn.com/ca.svg' },
-  { code: 'CHF', nom: 'Franc suisse', pays: 'Suisse', urlFlag: 'https://flagcdn.com/ch.svg' },
-  { code: 'EUR', nom: 'Euro', pays: 'Europe', urlFlag: 'https://flagcdn.com/eu.svg' },
-  { code: 'FJD', nom: 'Dollar fidjien', pays: 'Fidji', urlFlag: 'https://flagcdn.com/fj.svg' },
-  { code: 'GBP', nom: 'Livre sterling', pays: 'Royaume-Uni', urlFlag: 'https://flagcdn.com/gb.svg' },
-  { code: 'JPY', nom: 'Yen', pays: 'Japon', urlFlag: 'https://flagcdn.com/jp.svg' },
-  { code: 'NZD', nom: 'Dollar néo-zélandais', pays: 'Nouvelle-Zélande', urlFlag: 'https://flagcdn.com/nz.svg' },
-  { code: 'SGD', nom: 'Dollar de Singapour', pays: 'Singapour', urlFlag: 'https://flagcdn.com/sg.svg' },
-  { code: 'THB', nom: 'Baht thaïlandais', pays: 'Thaïlande', urlFlag: 'https://flagcdn.com/th.svg' },
-  { code: 'USD', nom: 'Dollar américain', pays: 'États-Unis', urlFlag: 'https://flagcdn.com/us.svg' },
-  { code: 'VUV', nom: 'Vatu', pays: 'Vanuatu', urlFlag: 'https://flagcdn.com/vu.svg' },
-  { code: 'XPF', nom: 'Franc Pacifique', pays: 'Nouvelle-Calédonie', urlFlag: 'https://flagcdn.com/nc.svg' }
-]
-
-const mid = Math.ceil(devises.length / 2)
-const colGauche = computed(() => devises.slice(0, mid))
-const colDroite = computed(() => devises.slice(mid))
 </script>
+
 
 
 
